@@ -14,7 +14,7 @@ body {
  background-image: url('stars.png');
  background-repeat: repeat;
  background-size: 50px 50px; /* Adjust for star size */
- animation: scroll 20s linear infinite;
+ animation: scroll 60s linear infinite;
  transform: scale(2); /* Zoom in */
 }
 
