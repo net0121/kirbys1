@@ -1,25 +1,12 @@
 body {
     background-color: #000;
     margin: 0;
-    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-#game-container {
-    width: 640px; /* Standard SNES resolution width */
-    height: 480px; /* Standard SNES resolution height */
-    position: relative;
-    background-color: #000;
-    overflow: hidden;
-    border: 2px solid white;
-}
-
-.sprite {
-    position: absolute;
-    /* This will be our placeholder block */
-    width: 32px;
-    height: 32px;
+canvas {
+    border: 1px solid white;
 }
