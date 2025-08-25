@@ -10,7 +10,7 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background-image: url('http://googleusercontent.com/file_content/0');
+    background-image: url('stars.png');
     background-repeat: repeat;
     background-size: 20vw; /* Make image bigger and responsive */
     animation: scroll 60s linear infinite;
