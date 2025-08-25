@@ -1,207 +1,154 @@
-// Get the canvas and its 2D context
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Element References ---
+    const gameContainer = document.getElementById('game-container');
+    const logoScene = document.getElementById('logo-scene');
+    const nintendoLogo = document.getElementById('nintendo-logo');
+    const halkenLogo = document.getElementById('halken-logo');
+    const skyScene = document.getElementById('sky-scene');
+    const groundScene = document.getElementById('ground-scene');
+    const titleScene = document.getElementById('title-scene');
+    const kirbyContainer = document.getElementById('kirby-container');
+    const starBurstContainer = document.getElementById('star-burst-container');
+    const blackOverlay = document.getElementById('black-overlay');
 
-// Set canvas dimensions (4:3 aspect ratio like the SNES)
-canvas.width = 640;
-canvas.height = 480;
+    // --- Helper Functions ---
+    const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-// Game variables
-let frameCount = 0;
-let currentState = 'initial';
-const stateDurations = {
-    'initial': 180, // ~3 seconds at 60fps
-    'logos': 120, // ~2 seconds
-    'sky': 180, // ~3 seconds
-    'grass': 180, // ~3 seconds
-    'flyAway': 120, // ~2 seconds
-    'titleScreen': 180, // ~3 seconds
-    'springBreeze': 120 // ~2 seconds
-};
-let stateTimer = 0;
-
-// Sprite placeholders (simple blocks)
-const sprites = {
-    nintendo: { x: 250, y: 150, width: 140, height: 40, color: '#6A9CF3', text: 'Nintendo' },
-    hal: { x: 270, y: 220, width: 100, height: 80, color: '#3A7029', text: 'HALKEN' },
-    kirby: { x: 0, y: 240, width: 40, height: 40, color: 'pink' },
-    kirbyStar: { x: 0, y: 260, width: 60, height: 30, color: '#FFD700' },
-    cloud: { width: 80, height: 40, color: 'white' },
-    stars: { width: 10, height: 10, color: 'yellow' },
-    titleLogo: { width: 400, height: 100, color: '#FFB8C1', text: 'Kirby Super Star' },
-    titleKirby: { width: 80, height: 80, color: 'pink' },
-    springBreeze: { width: 250, height: 40, color: 'gray', text: 'SPRING BREEZE' }
-};
-
-// Initial positions and velocities
-let kirbyY = 150;
-let kirbyVelocity = 0;
-let kirbyX = -100;
-const kirbySpeed = 2;
-
-// Arrays for multiple moving sprites
-const clouds = [];
-const stars = [];
-
-// Functions to draw sprites
-function drawRect(sprite) {
-    ctx.fillStyle = sprite.color;
-    ctx.fillRect(sprite.x, sprite.y, sprite.width, sprite.height);
-}
-
-function drawText(sprite) {
-    ctx.fillStyle = '#fff';
-    ctx.font = '24px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(sprite.text, sprite.x + sprite.width / 2, sprite.y + sprite.height / 2);
-}
-
-function drawKirby() {
-    drawRect({ ...sprites.kirbyStar, x: kirbyX, y: kirbyY });
-    drawRect({ ...sprites.kirby, x: kirbyX + 10, y: kirbyY - 20 });
-}
-
-// State transition and logic
-function changeState(newState) {
-    currentState = newState;
-    stateTimer = 0;
-    frameCount = 0; // Reset frame count for the new state
-}
-
-// The main game loop
-function update() {
-    frameCount++;
-    stateTimer++;
-
-    // State machine
-    switch (currentState) {
-        case 'initial':
-            if (stateTimer >= stateDurations.initial) {
-                changeState('logos');
-            }
-            break;
-
-        case 'logos':
-            if (stateTimer >= stateDurations.logos) {
-                changeState('sky');
-                kirbyX = -100; // Reset Kirby's position for the new scene
-                kirbyY = 150;
-            }
-            break;
-
-        case 'sky':
-            if (kirbyX < canvas.width / 2) {
-                kirbyX += kirbySpeed;
-            } else {
-                kirbyX = canvas.width / 2;
-            }
-            if (stateTimer >= stateDurations.sky) {
-                changeState('grass');
-                kirbyX = 200; // Place Kirby in the middle for landing
-                kirbyY = 150;
-                kirbyVelocity = 2; // Start Kirby moving down
-            }
-            break;
-
-        case 'grass':
-            if (kirbyY < 320) {
-                kirbyY += kirbyVelocity;
-                kirbyVelocity += 0.1; // Simple gravity
-            } else {
-                kirbyY = 320;
-                if (frameCount % 30 === 0) { // Hop animation
-                    kirbyVelocity = -2;
-                }
-            }
-            if (stateTimer >= stateDurations.grass) {
-                changeState('flyAway');
-            }
-            break;
-
-        case 'flyAway':
-            kirbyY -= kirbySpeed * 2;
-            kirbyX += kirbySpeed;
-            if (stateTimer >= stateDurations.flyAway) {
-                changeState('titleScreen');
-            }
-            break;
-
-        case 'titleScreen':
-            if (stateTimer >= stateDurations.titleScreen) {
-                changeState('springBreeze');
-            }
-            break;
-
-        case 'springBreeze':
-            // Final screen, can add more logic here later
-            break;
+    function switchScene(activeScene) {
+        document.querySelectorAll('.scene').forEach(scene => {
+            if (scene !== activeScene) scene.classList.remove('active');
+        });
+        activeScene.classList.add('active');
     }
 
-    requestAnimationFrame(render);
-}
-
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw based on the current state
-    switch (currentState) {
-        case 'initial':
-            // Black screen, nothing to draw
-            break;
-
-        case 'logos':
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawRect(sprites.nintendo);
-            drawText(sprites.nintendo);
-            drawRect(sprites.hal);
-            drawText(sprites.hal);
-            break;
-
-        case 'sky':
-            ctx.fillStyle = '#4993C5';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawKirby();
-            break;
-
-        case 'grass':
-            ctx.fillStyle = '#4993C5';
-            ctx.fillRect(0, 0, canvas.width, 240); // Sky
-            ctx.fillStyle = '#5A753B';
-            ctx.fillRect(0, 240, canvas.width, 240); // Grass
-            drawKirby();
-            break;
-
-        case 'flyAway':
-            ctx.fillStyle = '#1D2571';
-            ctx.fillRect(0, 0, canvas.width, canvas.height); // Darker blue sky
-            drawKirby();
-            break;
-
-        case 'titleScreen':
-            ctx.fillStyle = '#FFB8C1';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 60px "Comic Sans MS"'; // Placeholder font
-            ctx.textAlign = 'center';
-            ctx.fillText('KIRBY', canvas.width / 2, 100);
-            ctx.fillText('SUPER STAR', canvas.width / 2, 160);
-            drawRect({ ...sprites.titleKirby, x: canvas.width / 2 - 40, y: 200, color: 'pink' });
-            break;
-
-        case 'springBreeze':
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000';
-            ctx.font = '36px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(sprites.springBreeze.text, canvas.width / 2, canvas.height / 2);
-            break;
+    function createClouds(scene) {
+        scene.querySelectorAll('.cloud').forEach(c => c.remove());
+        for (let i = 0; i < 5; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'sprite cloud';
+            cloud.style.top = `${Math.random() * 40}%`;
+            cloud.style.left = `${Math.random() * 90}%`;
+            scene.insertBefore(cloud, kirbyContainer);
+        }
     }
 
-    // Call the next frame
-    requestAnimationFrame(update);
-}
+    function createLandingStars() {
+        for (let i = 0; i < 5; i++) {
+            const star = document.createElement('div');
+            star.className = 'landing-star';
+            groundScene.appendChild(star);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 20 + Math.random() * 30;
+            const startX = kirbyContainer.offsetLeft + (kirbyContainer.offsetWidth / 2);
+            const startY = kirbyContainer.offsetTop + (kirbyContainer.offsetHeight / 2);
+            
+            star.style.left = `${startX}px`;
+            star.style.top = `${startY}px`;
+            star.style.transform = 'scale(0.5)';
 
-// Start the animation loop
-update();
+            setTimeout(() => {
+                const endX = Math.cos(angle) * distance;
+                const endY = Math.sin(angle) * distance;
+                star.style.transform = `translate(${endX}px, ${endY}px) scale(1)`;
+                star.style.opacity = '0';
+            }, 10);
+
+            setTimeout(() => star.remove(), 400);
+        }
+    }
+
+    async function createTitleStarburst() {
+        for (let i = 0; i < 80; i++) {
+            const star = document.createElement('div');
+            star.className = 'sprite star';
+            
+            const angle = i * 0.25; // Increase angle for spiral
+            const radius = i * 4.5; // Increase radius for spiral
+            const duration = 0.5 + Math.random() * 0.3;
+
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+
+            star.style.transition = `transform ${duration}s cubic-bezier(0.5, 0, 0.8, 1), opacity ${duration}s ease-out`;
+            starBurstContainer.appendChild(star);
+            
+            await sleep(1); // Tiny delay for transition to register
+
+            star.style.transform = `translate(${x}px, ${y}px) rotate(180deg)`;
+            star.style.opacity = '0';
+            setTimeout(() => star.remove(), duration * 1000);
+        }
+    }
+
+    // --- Main Animation Sequence ---
+    async function playIntro() {
+        // === SCENE 1: Logos (3s) ===
+        switchScene(logoScene);
+        nintendoLogo.classList.add('squash-in');
+        await sleep(200);
+        halkenLogo.classList.add('squash-in');
+        await sleep(2300);
+        logoScene.style.opacity = '0';
+        await sleep(500);
+
+        // === SCENE 2: Fly In (3.5s) ===
+        createClouds(skyScene);
+        switchScene(skyScene);
+        kirbyContainer.classList.add('is-flying-in');
+        await sleep(3500);
+        
+        // === SCENE 3: On Ground (4s) ===
+        groundScene.appendChild(kirbyContainer);
+        kirbyContainer.className = 'sprite'; // Reset classes
+        Object.assign(kirbyContainer.style, { animation: '', top: '60%', left: '45%', transform: 'scale(1)' });
+        switchScene(groundScene);
+        createLandingStars();
+        await sleep(1000);
+
+        // Dashing logic
+        kirbyContainer.classList.add('is-dashing');
+        await sleep(250);
+        kirbyContainer.classList.remove('is-dashing');
+        await sleep(400);
+        kirbyContainer.style.transform = 'scaleX(-1)'; // Flip direction
+        kirbyContainer.classList.add('is-dashing');
+        await sleep(250);
+        kirbyContainer.classList.remove('is-dashing');
+        kirbyContainer.style.transform = 'scaleX(1)'; // Flip back
+        await sleep(1000);
+
+        // === SCENE 4: Fly Out (3s) ===
+        skyScene.appendChild(kirbyContainer);
+        createClouds(skyScene);
+        switchScene(skyScene);
+        kirbyContainer.classList.add('is-flying-out');
+        await sleep(3000);
+        skyScene.style.backgroundColor = '#002f6c';
+        await sleep(1000);
+        
+        // === SCENE 5: Title Screen ===
+        switchScene(titleScene);
+        gameContainer.classList.add('is-shaking');
+        await createTitleStarburst();
+        await sleep(400); // Shake duration
+        gameContainer.classList.remove('is-shaking');
+        starBurstContainer.style.opacity = '0';
+        
+        gameContainer.setAttribute('data-state', 'titlescreen');
+    }
+
+    // --- Event Listener for Title Screen ---
+    document.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter' && gameContainer.getAttribute('data-state') === 'titlescreen') {
+            gameContainer.setAttribute('data-state', 'ended');
+            titleScene.style.transition = 'opacity 0.8s ease-out';
+            titleScene.style.opacity = '0';
+            await sleep(800);
+            blackOverlay.style.visibility = 'visible';
+            blackOverlay.style.opacity = '1';
+        }
+    });
+
+    playIntro();
+});
