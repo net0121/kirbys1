@@ -7,128 +7,89 @@
     <style>
         /* --- Basic Setup --- */
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #111;
-            font-family: monospace;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; background-color: #111; font-family: monospace;
         }
 
         /* --- Game Screen Container --- */
         #game-container {
-            width: 512px;
-            height: 448px;
-            background-color: black;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #333;
+            width: 512px; height: 448px; background-color: black;
+            position: relative; overflow: hidden; border: 2px solid #333;
+            perspective: 900px;
         }
 
         /* --- Scene Management --- */
         .scene {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease;
+            position: absolute; width: 100%; height: 100%;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease;
+            transform-style: preserve-3d;
         }
+        .scene.active { opacity: 1; visibility: visible; }
 
-        .scene.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* --- Sprites (Placeholder Blocks) --- */
-        .sprite {
-            position: absolute;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
+        /* --- Sprites --- */
+        .sprite { position: absolute; background-size: contain; background-repeat: no-repeat; }
 
         /* == Scene 1: Logos == */
-        #logo-scene {
-            background-color: black;
-        }
+        #logo-scene { background-color: black; }
         #nintendo-logo, #halken-logo {
-            color: white;
-            display: flex; justify-content: center; align-items: center; font-size: 14px;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            color: white; display: flex; justify-content: center; align-items: center; font-size: 14px;
+            left: 50%; transform: translate(-50%, -50%) scale(0); transform-origin: center;
         }
-        #nintendo-logo {
-            width: 120px; height: 45px; background-color: #42a5f5; top: 35%;
-        }
-        #halken-logo {
-            width: 80px; height: 60px; background-color: #4caf50; top: 55%;
-        }
+        #nintendo-logo { width: 120px; height: 45px; background-color: #42a5f5; top: 35%; }
+        #halken-logo { width: 80px; height: 60px; background-color: #4caf50; top: 55%; }
 
         /* == Scene 2 & 3: Flying and Ground Scenes == */
-        #sky-scene, #ground-scene {
-            background-color: #2499ff; /* Sky Blue */
+        #sky-scene { background-color: #2499ff; }
+        #ground-scene { background-color: #66bb6a; }
+        #ground-world { position: absolute; bottom: 0; width: 100%; height: 100%; transform: translateY(50%); }
+        #grass-plane {
+            position: absolute; bottom: 0; width: 100%; height: 100%;
+            background-color: #66bb6a; transform-origin: bottom center;
+            transform: rotateX(70deg);
         }
-        #ground-scene {
-            background-color: #66bb6a; /* Grass Green */
+        #mountains {
+            position: absolute; bottom: 0; width: 100%; height: 80px;
+            background-color: #388e3c; transform: translateZ(-100px);
         }
 
-        #kirby-container {
-            position: absolute;
-            width: 60px; height: 60px;
-            /* Animation will be applied via class */
+        #kirby-container { position: absolute; width: 60px; height: 60px; }
+        #kirby { width: 100%; height: 100%; background-color: #ff80ab; border-radius: 50%; transform-origin: bottom center; }
+        #warp-star { width: 70px; height: 70px; background-color: #ffeb3b; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; }
+        .cloud { width: 80px; height: 50px; background-color: white; border-radius: 25px; }
+        .landing-particle {
+            position: absolute; background-color: yellow; border-radius: 50%;
+            animation: pop-out 0.5s ease-out forwards;
         }
-        #kirby {
-            width: 100%; height: 100%;
-            background-color: #ff80ab; /* Pink */
-            border-radius: 50%;
-            transform-origin: bottom center;
+        @keyframes pop-out {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.5) translateY(-30px); opacity: 0; }
         }
-        #warp-star {
-            width: 70px; height: 70px; background-color: #ffeb3b; /* Yellow */
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-        }
-        .cloud {
-            width: 80px; height: 50px; background-color: white; border-radius: 25px;
-        }
-        
+
         /* == Scene 4: Title Screen == */
         #title-scene {
-            /* NEW: Accurate polka-dot background */
             background-color: #f8bbd0;
             background-image: radial-gradient(circle, white 2px, transparent 2px);
             background-size: 25px 25px;
         }
-        #star-burst-container {
-            position: absolute; width: 100%; height: 100%;
-            background-color: #43a047; /* Green flash background */
-        }
-        .star {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 12px; height: 12px;
-            background-color: #ffeb3b; /* Yellow */
-            transform-origin: center;
-        }
-        #title-elements {
-            width: 100%; height: 100%;
-            opacity: 0; /* Hidden until stars finish */
-        }
+        #star-burst-container { position: absolute; width: 100%; height: 100%; background-color: #43a047; }
+        .star { position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; background-color: #ffeb3b; }
+        #title-elements.fade-out .fade-item { opacity: 0 !important; }
+        #title-elements .fade-item { transition: opacity 0.3s ease; }
         #title-kirby-text {
             width: 250px; height: 80px; background-color: #fbc02d;
             position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
             color: #c49000; display: flex; justify-content: center; align-items: center; font-size: 40px;
         }
-        #title-emblem {
-            width: 400px; height: 150px; background-color: #fbc02d;
-            position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
-        }
+        #title-emblem { width: 400px; height: 150px; background-color: #fbc02d; position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); }
         #title-superstar-text {
-            width: 380px; height: 70px; background-color: #4527a0; /* Dark Purple */
+            width: 380px; height: 70px; background-color: #4527a0;
             position: absolute; top: 56%; left: 50%; transform: translate(-50%, -50%);
             color: white; display: flex; justify-content: center; align-items: center; font-size: 30px;
+        }
+        #title-copyright {
+            position: absolute; bottom: 30px; width: 100%; text-align: center;
+            color: #c2185b; font-size: 14px; line-height: 1.5;
+            transition-delay: 0.2s; /* Fade slightly after the main title */
         }
         #title-kirby {
             width: 100px; height: 100px; background-color: #ff80ab;
@@ -136,42 +97,39 @@
             border-radius: 50%; border: 4px solid #c2185b;
             color: white; display: flex; justify-content: center; align-items: center; font-size: 20px;
         }
-        #kirby-hat {
-            width: 50px; height: 40px; background-color: #d32f2f; /* Red */
-            position: absolute; top: -15px; left: 25px;
-            border: 4px solid white;
-        }
-        #title-copyright {
-            position: absolute; bottom: 30px; width: 100%; text-align: center;
-            color: #c2185b; font-size: 14px; line-height: 1.5;
-        }
+        #kirby-hat { width: 50px; height: 40px; background-color: #d32f2f; position: absolute; top: -15px; left: 25px; border: 4px solid white; }
 
         /* == System Elements == */
         #fade-to-black {
-            position: absolute; width: 100%; height: 100%;
-            background-color: black;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1s ease;
-            z-index: 100;
+            position: absolute; width: 100%; height: 100%; background-color: black;
+            opacity: 0; visibility: hidden; transition: opacity 0.5s ease; z-index: 100;
         }
         
-        /* --- NEW: Keyframe animations for exact flight paths --- */
-        .is-flying-in {
-            animation: fly-in-path 3.5s ease-out forwards;
-        }
-        .is-flying-out {
-            animation: fly-out-path 3s ease-in forwards;
-        }
+        /* --- Animation Keyframes --- */
+        .squash-in { animation: squash-stretch-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .is-flying-in { animation: fly-in-path 3.5s ease-out forwards; }
+        .is-dashing { animation: kirby-dash 0.3s ease-in-out; }
+        .is-flying-out { animation: fly-out-path 3s ease-in forwards; }
         
+        @keyframes squash-stretch-in {
+            0%   { transform: translate(-50%, -50%) scale(0.5, 1.5); }
+            40%  { transform: translate(-50%, -50%) scale(1.3, 0.7); }
+            70%  { transform: translate(-50%, -50%) scale(0.9, 1.1); }
+            100% { transform: translate(-50%, -50%) scale(1, 1); }
+        }
         @keyframes fly-in-path {
             0%   { top: 5%; left: 110%; transform: scale(0.4); }
             50%  { top: 30%; left: 60%; transform: scale(0.8); }
-            100% { top: 40%; left: 42%; transform: scale(1.5); }
+            90%  { top: 40%; left: 42%; transform: scale(1.6); }
+            100% { top: 40%; left: 42%; transform: scale(1.5); } /* Arrival squash */
+        }
+        @keyframes kirby-dash {
+            50% { transform: scale(1) translateX(25px) translateY(-10px); }
+            100% { transform: scale(1) translateX(50px); }
         }
         @keyframes fly-out-path {
-            0%   { top: 60%; left: 45%; transform: scale(1); }
-            100% { top: -20%; left: 15%; transform: scale(0.2); }
+            0%   { transform: scale(1); }
+            100% { top: -20%; transform: scale(0.1); }
         }
     </style>
 </head>
@@ -183,69 +141,70 @@
         <div id="halken-logo" class="sprite">HALKEN</div>
     </div>
 
-    <div id="sky-scene" class="scene">
-        <div id="kirby-container" class="sprite">
-            <div id="warp-star" class="sprite"></div>
-            <div id="kirby" class="sprite"></div>
-        </div>
-    </div>
+    <div id="sky-scene" class="scene"></div>
     
     <div id="ground-scene" class="scene">
+        <div id="ground-world">
+            <div id="grass-plane"></div>
+            <div id="mountains"></div>
         </div>
+    </div>
     
     <div id="title-scene" class="scene">
         <div id="star-burst-container"></div>
         <div id="title-elements">
-            <div id="title-kirby-text">KIRBY</div>
-            <div id="title-emblem"></div>
-            <div id="title-superstar-text">SUPER STAR</div>
-            <div id="title-copyright">
-                © 1995, 1996 HAL Laboratory, inc.<br>
-                © 1995, 1996 Nintendo
-            </div>
-            <div id="title-kirby" class="sprite">
-                Kirby
-                <div id="kirby-hat"></div>
+            <div id="title-kirby-text" class="fade-item">KIRBY</div>
+            <div id="title-emblem" class="fade-item"></div>
+            <div id="title-superstar-text" class="fade-item">SUPER STAR</div>
+            <div id="title-copyright" class="fade-item">...</div>
+            <div id="title-kirby" class="sprite fade-item">
+                Kirby <div id="kirby-hat"></div>
             </div>
         </div>
     </div>
     
     <div id="fade-to-black"></div>
+    
+    <div id="kirby-container" class="sprite">
+        <div id="warp-star" class="sprite"></div>
+        <div id="kirby" class="sprite"></div>
+    </div>
 </div>
 
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Element References ---
         const gameContainer = document.getElementById('game-container');
+        const allScenes = document.querySelectorAll('.scene');
         const logoScene = document.getElementById('logo-scene');
         const skyScene = document.getElementById('sky-scene');
         const groundScene = document.getElementById('ground-scene');
         const titleScene = document.getElementById('title-scene');
+        const nintendoLogo = document.getElementById('nintendo-logo');
+        const halkenLogo = document.getElementById('halken-logo');
         const kirbyContainer = document.getElementById('kirby-container');
+        const groundWorld = document.getElementById('ground-world');
         const starBurstContainer = document.getElementById('star-burst-container');
         const titleElements = document.getElementById('title-elements');
         const fadeToBlack = document.getElementById('fade-to-black');
 
-        // --- Helper Functions ---
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         function switchScene(activeScene) {
-            document.querySelectorAll('.scene').forEach(scene => {
-                if (scene !== activeScene) scene.classList.remove('active');
-            });
+            allScenes.forEach(scene => scene.classList.remove('active'));
             activeScene.classList.add('active');
+            // Ensure Kirby is visible if he's part of the active scene
+            kirbyContainer.style.opacity = (activeScene === skyScene || activeScene === groundScene) ? 1 : 0;
         }
 
         function createClouds() {
-            // Ensure no old clouds exist
             skyScene.querySelectorAll('.cloud').forEach(c => c.remove());
             for (let i = 0; i < 5; i++) {
                 const cloud = document.createElement('div');
                 cloud.className = 'sprite cloud';
                 cloud.style.top = `${Math.random() * 40}%`;
                 cloud.style.left = `${Math.random() * 90}%`;
-                skyScene.insertBefore(cloud, kirbyContainer);
+                skyScene.appendChild(cloud);
             }
         }
         
@@ -255,84 +214,113 @@
                 star.className = 'sprite star';
                 
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 300 + Math.random() * 100;
-                const duration = 0.5 + Math.random() * 0.5;
+                const distance = 400 + Math.random() * 50;
+                const duration = 0.6 + Math.random() * 0.5;
+                const finalRotation = 180 + Math.random() * 360;
 
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
 
-                star.style.transition = `transform ${duration}s cubic-bezier(0.2, 0.7, 0.8, 1), opacity ${duration}s ease-out`;
-                
+                star.style.transition = `transform ${duration}s cubic-bezier(0.1, 0.5, 0.3, 1), opacity ${duration}s ease-out`;
                 starBurstContainer.appendChild(star);
-
-                // We need a tiny delay for the transition to register
                 await sleep(1);
 
-                star.style.transform = `translate(${x}px, ${y}px) rotate(360deg)`;
+                star.style.transform = `translate(${x}px, ${y}px) rotate(${finalRotation}deg)`;
                 star.style.opacity = '0';
-
-                // Clean up the DOM after animation
                 setTimeout(() => star.remove(), duration * 1000);
             }
         }
+        
+        async function playGroundSequence() {
+            // Kirby lands, create particles
+            for(let i=0; i < 5; i++) {
+                const p = document.createElement('div');
+                p.className = 'landing-particle';
+                p.style.width = `${Math.random() * 6 + 4}px`;
+                p.style.height = p.style.width;
+                p.style.left = `${kirbyContainer.offsetLeft + 20 + Math.random()*20}px`;
+                p.style.top = `${kirbyContainer.offsetTop + 40}px`;
+                groundScene.appendChild(p);
+                setTimeout(() => p.remove(), 500);
+            }
+            await sleep(1000);
 
-        // --- Main Animation Sequence ---
-        async function playIntro() {
-            // --- Scene 1: Logos (3 seconds) ---
-            switchScene(logoScene);
-            await sleep(2500);
-            logoScene.style.opacity = '0'; // NEW: Fade out logos
+            // First dash
+            kirbyContainer.classList.add('is-dashing');
+            await sleep(300);
+            kirbyContainer.style.left = `${kirbyContainer.offsetLeft + 50}px`;
+            kirbyContainer.classList.remove('is-dashing');
             await sleep(500);
 
-            // --- Scene 2: Kirby Flying In (3.5 seconds) ---
-            createClouds();
+            // Second dash
+            kirbyContainer.classList.add('is-dashing');
+            await sleep(300);
+            kirbyContainer.style.left = `${kirbyContainer.offsetLeft + 50}px`;
+            kirbyContainer.classList.remove('is-dashing');
+            await sleep(1000);
+            
+            // Pan camera up before takeoff
+            groundWorld.style.transition = 'transform 1s ease-out';
+            groundWorld.style.transform = 'translateY(0%)';
+        }
+
+        async function playIntro() {
+            // Scene 1: Logos
+            switchScene(logoScene);
+            nintendoLogo.classList.add('squash-in');
+            await sleep(200);
+            halkenLogo.classList.add('squash-in');
+            await sleep(2300);
+            logoScene.style.opacity = '0';
+            await sleep(500);
+
+            // Scene 2: Kirby Flying In
+            kirbyContainer.style.opacity = 1;
             switchScene(skyScene);
+            createClouds();
             kirbyContainer.classList.add('is-flying-in');
             await sleep(3500);
             
-            // --- Scene 3: Ground (3 seconds) ---
-            // Re-parent Kirby to the ground scene for the cut effect
-            groundScene.appendChild(kirbyContainer);
-            kirbyContainer.className = 'sprite'; // Clear animation classes
-            kirbyContainer.style.animation = ''; // Clear animation property
-            kirbyContainer.style.top = '60%';
-            kirbyContainer.style.left = '45%';
-            kirbyContainer.style.transform = 'scale(1)';
+            // Scene 3: Ground
             switchScene(groundScene);
-            await sleep(2000);
+            kirbyContainer.className = 'sprite'; // Reset class
+            kirbyContainer.style.top = '55%';
+            kirbyContainer.style.left = '30%';
+            kirbyContainer.style.transform = 'scale(1)';
+            await playGroundSequence();
+            await sleep(1000); // Wait for pan
 
-            // --- Scene 4: Kirby Flying Out (3 seconds) ---
-            // Re-parent Kirby back to the sky for takeoff
-            skyScene.appendChild(kirbyContainer);
-            createClouds();
+            // Scene 4: Kirby Flying Out
             switchScene(skyScene);
+            kirbyContainer.style.top = '60%'; // Start pos for takeoff
+            kirbyContainer.style.left = '45%';
             kirbyContainer.classList.add('is-flying-out');
             await sleep(3000);
-            skyScene.style.backgroundColor = '#002f6c'; // Night sky
+            skyScene.style.backgroundColor = '#002f6c';
             await sleep(1000);
+            kirbyContainer.style.opacity = 0; // Kirby is gone
             
-            // --- Scene 5: Title Screen ---
+            // Scene 5: Title Screen
             switchScene(titleScene);
             await createTitleStarburst();
-            await sleep(500);
-            starBurstContainer.style.display = 'none'; // Hide green flash bg
+            await sleep(600);
+            starBurstContainer.style.display = 'none';
             titleElements.style.opacity = '1';
-            
-            // NEW: Listen for Enter key to end
             gameContainer.setAttribute('data-state', 'titlescreen');
         }
 
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter' && gameContainer.getAttribute('data-state') === 'titlescreen') {
+                gameContainer.setAttribute('data-state', 'ended');
+                titleElements.classList.add('fade-out');
+                await sleep(500); // Wait for text fade
                 fadeToBlack.style.visibility = 'visible';
                 fadeToBlack.style.opacity = '1';
-                gameContainer.setAttribute('data-state', 'ended'); // Prevent re-trigger
             }
         });
 
         playIntro();
     });
 </script>
-
 </body>
 </html>
