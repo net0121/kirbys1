@@ -1,23 +1,26 @@
 body {
  margin: 0;
- overflow: hidden; /* Prevent scrollbars */
+ overflow: hidden; /* Hide scrollbars */
+ background-color: #800020; /* Fallback color */
 }
 
 
 .scrolling-background {
- position: fixed;
- top: -10%; /* Adjust to hide initial overflow */
- left: -10%;
- width: 120%;
- height: 120%;
+ position: absolute;
+ top: -50%;
+ left: -50%;
+ width: 200%;
+ height: 200%;
  background-image: url('stars.png');
  background-repeat: repeat;
- background-size: 600%; /* Initial zoom level - adjust as needed */
- animation: scroll 20s linear infinite; /* Adjust duration for speed */
+ background-size: 50px 50px; /* Adjust for star size */
+ animation: scroll 20s linear infinite;
+ transform: scale(2); /* Zoom in */
 }
 
 
 @keyframes scroll {
- 0% { background-position: 0 0; }
- 100% { background-position: 100% 100%; } /* Scroll to bottom right for up-left illusion */
+ to {
+ background-position: 100% 100%;
+ }
 }
