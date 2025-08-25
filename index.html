@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kirby Super Star Intro</title>
+    <title>Kirby Super Star Intro - Enhanced</title>
     <style>
         /* --- Basic Setup --- */
         body {
@@ -63,7 +63,7 @@
             color: #5eb7f8;
             background-color: transparent;
             border: 3px solid #003a94;
-            border-radius: 25px; /* Creates oval shape */
+            border-radius: 25px;
             font-size: 24px;
             font-weight: bold;
             font-family: monospace;
@@ -123,18 +123,19 @@
             /* Star shape for the Warp Star */
             background-color: #ffeb3b;
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            /* Base transform for positioning Kirby inside */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        /* Kirby himself, drawn as a pseudo-element on the container */
-        #kirby-container::before {
-            content: '';
-            position: absolute;
+        
+        /* NEW: Kirby's body is a separate element for independent animation */
+        #kirby-body {
             width: 40px;
             height: 40px;
             background-color: #ff80ab; /* Pink */
             border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -60%);
+            transform: translateY(-15%); /* Position Kirby on top of the star */
         }
 
         .cloud {
@@ -152,7 +153,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background-color: #43a047; /* Green flash background */
+            background-color: #43a047;
         }
         .star {
             position: absolute;
@@ -160,12 +161,11 @@
             left: 50%;
             width: 12px;
             height: 12px;
-            background-color: #ffeb3b; /* Yellow */
+            background-color: #ffeb3b;
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
             transform-origin: center;
         }
         
-        /* NEW: Using the provided image for the title screen */
         #title-image {
             position: absolute;
             width: 100%;
@@ -186,14 +186,15 @@
             z-index: 100;
         }
 
-        /* --- Keyframe animations for exact flight paths --- */
+        /* --- Keyframe animations for path and shape --- */
+
+        /* Movement Paths for the Container */
         .is-flying-in {
-            animation: fly-in-path 3s ease-out forwards;
+            animation: fly-in-path 3s cubic-bezier(0.3, 0, 0.4, 1) forwards;
         }
         .is-flying-out {
-            animation: fly-out-path 3s ease-in forwards;
+            animation: fly-out-path 3s cubic-bezier(0.5, 0, 0.7, 1) forwards;
         }
-
         @keyframes fly-in-path {
             0%   { top: 10%; left: 110%; transform: scale(0.6) rotate(15deg); }
             40%  { top: 45%; left: 60%;  transform: scale(1) rotate(-5deg); }
@@ -202,6 +203,44 @@
         @keyframes fly-out-path {
             0%   { top: 75%; left: 42%;  transform: scale(1.4) rotate(0deg); }
             100% { top: -20%; left: 25%; transform: scale(0.5) rotate(-15deg); }
+        }
+
+        /* Shape Animations for Kirby's Body */
+        .shape-fly-in {
+            animation: shape-fly-in-anim 3s cubic-bezier(0.3, 0, 0.4, 1) forwards;
+        }
+        .shape-land-bounce {
+            animation: shape-land-bounce-anim 0.6s ease-out forwards;
+        }
+        .shape-takeoff-squash {
+            animation: shape-takeoff-squash-anim 0.5s ease-out forwards;
+        }
+        .shape-fly-out {
+             animation: shape-fly-out-anim 3s cubic-bezier(0.5, 0, 0.7, 1) forwards;
+        }
+
+        @keyframes shape-fly-in-anim {
+            0%   { transform: translateY(-15%) scale(1); }
+            25%  { transform: translateY(-15%) scale(0.8, 1.2); } /* Stretch on accel */
+            60%  { transform: translateY(-15%) scale(1); }
+            90%  { transform: translateY(-15%) scale(1.2, 0.8); } /* Squash on decel */
+            100% { transform: translateY(-15%) scale(1); }
+        }
+        @keyframes shape-land-bounce-anim {
+            0%   { transform: translateY(-15%) scale(1, 1); }
+            40%  { transform: translateY(-15%) scale(1.4, 0.6); } /* SQUASH */
+            70%  { transform: translateY(-15%) scale(0.8, 1.2); } /* Bounce */
+            100% { transform: translateY(-15%) scale(1, 1); }      /* Settle */
+        }
+        @keyframes shape-takeoff-squash-anim {
+            0%   { transform: translateY(-15%) scale(1, 1); }
+            70%  { transform: translateY(-15%) scale(1.3, 0.7); } /* SQUASH for anticipation */
+            100% { transform: translateY(-15%) scale(0.8, 1.3); } /* STRETCH on launch */
+        }
+        @keyframes shape-fly-out-anim {
+            0%   { transform: translateY(-15%) scale(0.8, 1.3); } /* Carry over stretch from takeoff */
+            30%  { transform: translateY(-15%) scale(1); }
+            100% { transform: translateY(-15%) scale(1); }
         }
     </style>
 </head>
@@ -220,7 +259,9 @@
     </div>
 
     <div id="sky-scene" class="scene">
-        <div id="kirby-container" class="sprite"></div>
+        <div id="kirby-container" class="sprite">
+            <div id="kirby-body"></div>
+        </div>
     </div>
 
     <div id="ground-scene" class="scene">
@@ -244,6 +285,7 @@
         const groundScene = document.getElementById('ground-scene');
         const titleScene = document.getElementById('title-scene');
         const kirbyContainer = document.getElementById('kirby-container');
+        const kirbyBody = document.getElementById('kirby-body'); // New reference
         const starBurstContainer = document.getElementById('star-burst-container');
         const titleImage = document.getElementById('title-image');
         const fadeToBlack = document.getElementById('fade-to-black');
@@ -259,14 +301,12 @@
         }
 
         function createClouds() {
-            // Ensure no old clouds exist
             skyScene.querySelectorAll('.cloud').forEach(c => c.remove());
             for (let i = 0; i < 5; i++) {
                 const cloud = document.createElement('div');
                 cloud.className = 'sprite cloud';
                 cloud.style.top = `${Math.random() * 40}%`;
                 cloud.style.left = `${Math.random() * 90}%`;
-                // Add clouds before Kirby so he flies over them
                 skyScene.insertBefore(cloud, kirbyContainer);
             }
         }
@@ -275,24 +315,16 @@
             for (let i = 0; i < 60; i++) {
                 const star = document.createElement('div');
                 star.className = 'sprite star';
-
                 const angle = Math.random() * Math.PI * 2;
                 const distance = 300 + Math.random() * 100;
                 const duration = 0.5 + Math.random() * 0.5;
-
                 const x = Math.cos(angle) * distance;
                 const y = Math.sin(angle) * distance;
-
                 star.style.transition = `transform ${duration}s cubic-bezier(0.2, 0.7, 0.8, 1), opacity ${duration}s ease-out`;
                 starBurstContainer.appendChild(star);
-
-                // We need a tiny delay for the transition to register
                 await sleep(1);
-
                 star.style.transform = `translate(${x}px, ${y}px) rotate(360deg)`;
                 star.style.opacity = '0';
-
-                // Clean up the DOM after animation
                 setTimeout(() => star.remove(), duration * 1000);
             }
         }
@@ -301,35 +333,45 @@
         async function playIntro() {
             // --- Scene 1: Logos (2.5 seconds total) ---
             switchScene(logoScene);
-            await sleep(2000); // More accurate to video timing
+            await sleep(2000);
             logoScene.style.opacity = '0';
             await sleep(500);
 
             // --- Scene 2: Kirby Flying In (3 seconds) ---
             createClouds();
-            skyScene.appendChild(kirbyContainer); // Make sure kirby is in sky scene
+            skyScene.appendChild(kirbyContainer);
             switchScene(skyScene);
-            kirbyContainer.classList.add('is-flying-in');
+            // Animate path and shape simultaneously
+            kirbyContainer.className = 'sprite is-flying-in';
+            kirbyBody.className = 'shape-fly-in';
             await sleep(3000);
 
             // --- Scene 3: Ground (3 seconds) ---
-            // Re-parent Kirby to the ground scene for the camera cut effect
             groundScene.appendChild(kirbyContainer);
-            kirbyContainer.className = 'sprite'; // Clear animation classes
-            // Manually set style to match the end of the fly-in animation
+            kirbyContainer.className = 'sprite'; // Clear path animation
             kirbyContainer.style.top = '75%';
             kirbyContainer.style.left = '42%';
             kirbyContainer.style.transform = 'scale(1.4)';
             switchScene(groundScene);
-            await sleep(3000); // More accurate to video timing
+            // Trigger the landing bounce
+            kirbyBody.className = 'shape-land-bounce';
+            await sleep(600); // Wait for bounce animation to finish
+            kirbyBody.className = ''; // Reset shape class
+            await sleep(2400); // Wait for the rest of the scene duration
 
             // --- Scene 4: Kirby Flying Out (4 seconds total) ---
-            // Re-parent Kirby back to the sky for takeoff
             skyScene.appendChild(kirbyContainer);
+            // Trigger the takeoff anticipation squash
+            kirbyBody.className = 'shape-takeoff-squash';
+            await sleep(500); // Wait for takeoff animation
+            
             createClouds();
             switchScene(skyScene);
-            kirbyContainer.classList.add('is-flying-out');
+            // Animate path and shape simultaneously for takeoff
+            kirbyContainer.className = 'sprite is-flying-out';
+            kirbyBody.className = 'shape-fly-out';
             await sleep(3000);
+            
             skyScene.style.backgroundColor = '#002f6c'; // Night sky
             await sleep(1000);
 
@@ -337,19 +379,17 @@
             switchScene(titleScene);
             await createTitleStarburst();
             await sleep(200);
-            starBurstContainer.style.display = 'none'; // Hide green flash bg
-            titleImage.style.opacity = '1'; // Fade in the title screen image
+            starBurstContainer.style.display = 'none';
+            titleImage.style.opacity = '1';
 
-            // Set state to listen for Enter key to end the intro
             gameContainer.setAttribute('data-state', 'titlescreen');
         }
 
-        // --- Event Listener to "Press Start" ---
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && gameContainer.getAttribute('data-state') === 'titlescreen') {
                 fadeToBlack.style.visibility = 'visible';
                 fadeToBlack.style.opacity = '1';
-                gameContainer.setAttribute('data-state', 'ended'); // Prevent re-trigger
+                gameContainer.setAttribute('data-state', 'ended');
             }
         });
 
