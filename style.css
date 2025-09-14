@@ -1,17 +1,16 @@
 body {
     margin: 0;
+    touch-action: pan-x pan-y;
     background-color: #800020;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     position: relative;
-    /* Prevent user zoom on mobile - can be overridden by browser */
-    touch-action: pan-x pan-y;
 }
 
 html, body {
-    overflow: hidden; /* Ensure no scrolling */
+    overflow: hidden;
 }
 
 .scrolling-background {
@@ -20,13 +19,13 @@ html, body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background-image: url('stars.png'); 
+    background-image: url('stars.png');
     background-repeat: repeat;
     background-size: 50vw;
     animation: scroll 60s linear infinite;
     z-index: -1;
-    transform: scale(2); 
-    transform-origin: center center; 
+    transform: scale(2);
+    transform-origin: center center;
 }
 
 @keyframes scroll {
@@ -36,28 +35,28 @@ html, body {
 }
 
 .bulletin-board-container {
-    position: relative; /* Crucial for positioning the button inside it */
+    position: relative;
     z-index: 1;
-    width: 120vw; /* Make the container very big, adjust as needed */
-    max-width: 800px; /* Optional: cap max width on very large screens */
-    /* Remove padding if you want the image to fill the container entirely */
+    max-width: 1200px; /* Set max width for desktop */
+    width: 95vw; /* Make the board responsive on mobile */
+    height: auto; /* Maintain aspect ratio */
 }
 
 .bulletin-board-image {
-    max-width: 100%; /* Ensure image fits within its container */
-    height: auto; /* Maintain aspect ratio */
-    display: block; /* Remove extra space below image */
+    width: 100%; /* Make the image fill its container */
+    height: auto;
+    display: block;
 }
 
 #play-button {
     position: absolute;
-    bottom: 10px; /* Adjust distance from the bottom */
-    left: 10px; /* Adjust distance from the left */
-    z-index: 2; /* Ensure button is above the board image */
+    bottom: 10px;
+    left: 10px;
+    z-index: 2;
     padding: 8px 15px;
     font-size: 16px;
     cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    background-color: rgba(0, 0, 0, 0.7);
     color: white;
     border: 1px solid white;
     border-radius: 5px;
@@ -65,10 +64,10 @@ html, body {
 
 @media (max-width: 600px) {
     .bulletin-board-container {
-        width: 98vw; /* Take up even more width on smaller screens */
+        width: 98vw;
     }
     #play-button {
-        padding: 6px 12px; /* Smaller button on small screens */
+        padding: 6px 12px;
         font-size: 14px;
         bottom: 5px;
         left: 5px;
