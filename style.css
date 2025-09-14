@@ -1,7 +1,12 @@
 body {
     margin: 0;
-    overflow: hidden;
-    background-color: #800020;
+    overflow: hidden; /* Hide scrollbars for the background */
+    background-color: #800020; /* Fallback color */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    position: relative; /* For z-index to work relative to children */
 }
 
 .scrolling-background {
@@ -10,14 +15,40 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background-image: url('stars.png');
+    background-image: url('stars.png'); /* Your background stars */
     background-repeat: repeat;
-    background-size: 90vw; /* Make image bigger and responsive */
+    background-size: 50vw;
     animation: scroll 60s linear infinite;
+    z-index: -1; /* Place background behind other content */
 }
 
 @keyframes scroll {
     to {
         background-position: 100% 100%;
+    }
+}
+
+.bulletin-board-container {
+    position: relative; /* Allow z-index */
+    z-index: 1; /* Place on top of background */
+    display: flex; /* Use flexbox to center image if it grows */
+    justify-content: center;
+    align-items: center;
+    width: 80vw; /* Make container width responsive and big */
+    max-width: 600px; /* Optional: cap max width on very large screens */
+    padding: 10px; /* Some padding around the board */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.bulletin-board-image {
+    max-width: 100%; /* Ensure image fits within its container */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
+}
+
+/* For better responsiveness on very small screens, you might adjust the container width */
+@media (max-width: 600px) {
+    .bulletin-board-container {
+        width: 90vw; /* Take up more width on smaller screens */
     }
 }
