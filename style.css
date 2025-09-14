@@ -38,7 +38,7 @@ html, body {
 .bulletin-board-container {
     position: relative; /* Crucial for positioning the button inside it */
     z-index: 1;
-    width: 95vw; /* Make the container very big, adjust as needed */
+    width: 120vw; /* Make the container very big, adjust as needed */
     max-width: 800px; /* Optional: cap max width on very large screens */
     /* Remove padding if you want the image to fill the container entirely */
 }
