@@ -37,13 +37,13 @@ html, body {
 .bulletin-board-container {
     position: relative;
     z-index: 1;
-    max-width: 1200px; /* Set max width for desktop */
-    width: 95vw; /* Make the board responsive on mobile */
-    height: auto; /* Maintain aspect ratio */
+    width: 1200px; /* Default desktop size */
+    max-width: 95vw; /* Max size on smaller screens */
+    height: auto;
 }
 
 .bulletin-board-image {
-    width: 100%; /* Make the image fill its container */
+    width: 100%;
     height: auto;
     display: block;
 }
