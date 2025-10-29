@@ -19,7 +19,8 @@ html, body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background-image: url('http://googleusercontent.com/file_content/0'); /* Your background stars */
+    /* Make sure this URL points to your star background image */
+    background-image: url('stars.png');
     background-repeat: repeat;
     background-size: 50vw;
     animation: scroll 60s linear infinite;
@@ -40,9 +41,7 @@ html, body {
     width: 1200px; /* Default desktop size */
     max-width: 95vw; /* Max size on smaller screens */
     height: auto;
-    display: flex; /* Use flexbox to center content if needed */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    /* Removed flex properties, as we are using absolute positioning for items */
 }
 
 .bulletin-board-image {
@@ -51,58 +50,40 @@ html, body {
     display: block;
 }
 
+/* --- MODIFIED SECTION --- */
 .board-item {
     position: absolute; /* Position relative to the board container */
-    top: 50%; /* Center vertically on the board */
-    left: 50%; /* Center horizontally on the board */
-    transform: translate(-50%, -50%); /* Adjust for its own size to perfectly center */
-    width: 30%; /* Example width, adjust as needed (e.g., 30% of board width) */
-    max-width: 300px; /* Max size for the item */
-    background-color: rgba(255, 255, 255, 0.1); /* Optional: slight background */
-    padding: 5px; /* Optional: padding around the image */
-    box-sizing: border-box; /* Include padding in width */
-    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for glow */
+    top: 25px; /* Distance from the top of the board */
+    left: 25px; /* Distance from the left of the board */
+    /* transform: translate(-50%, -50%); */ /* Removed centering transform */
+    width: 20%; /* Image will be 20% of the board's width */
+    max-width: 200px; /* Set a max pixel size */
+    transition: box-shadow 0.3s ease-in-out;
     z-index: 3; /* Ensure it's above the board image */
 }
+/* --- END MODIFIED SECTION --- */
 
 .hover-glow-image {
-    width: 100%; /* Make image fill its item container */
+    width: 100%;
     height: auto;
     display: block;
-    /* Optional: Remove any default borders or outlines */
     border: none;
     outline: none;
 }
 
 /* Keyframes for the glowing effect */
-@keyframes glow-white { from { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } to { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } }
-@keyframes glow-blue { from { box-shadow: 0 0 15px rgba(0, 0, 255, 0.8); } to { box-shadow: 0 0 15px rgba(0, 0, 255, 0.8); } }
-@keyframes glow-black { from { box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); } to { box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); } }
-@keyframes glow-green { from { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); } to { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); } }
-@keyframes glow-red { from { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); } to { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); } }
-
-
-.board-item:hover {
-    animation:
-        glow-white 0.8s forwards,
-        glow-blue 0.8s 0.8s forwards,
-        glow-black 0.8s 1.6s forwards,
-        glow-green 0.8s 2.4s forwards,
-        glow-red 0.8s 3.2s forwards,
-        cycle-glow 4s 4s infinite; /* Loop the entire sequence */
-    box-shadow: 0 0 15px white; /* Initial glow color */
-}
-
-/* Combined animation for continuous looping */
 @keyframes cycle-glow {
     0%   { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } /* White */
     20%  { box-shadow: 0 0 15px rgba(0, 0, 255, 0.8); }     /* Blue */
     40%  { box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); }       /* Black */
     60%  { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }     /* Green */
     80%  { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }     /* Red */
-    100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } /* Back to White for seamless loop */
+    100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } /* Back to White */
 }
 
+.board-item:hover {
+    animation: cycle-glow 4s infinite;
+}
 
 #play-button {
     position: absolute;
@@ -129,6 +110,8 @@ html, body {
         left: 5px;
     }
     .board-item {
-        width: 40%; /* Adjust size on mobile if needed */
+        width: 30%; /* Adjust size on mobile if needed */
+        top: 10px;
+        left: 10px;
     }
 }
