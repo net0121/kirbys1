@@ -41,7 +41,6 @@ html, body {
     width: 1200px; /* Default desktop size */
     max-width: 95vw; /* Max size on smaller screens */
     height: auto;
-    /* Removed flex properties, as we are using absolute positioning for items */
 }
 
 .bulletin-board-image {
@@ -53,15 +52,15 @@ html, body {
 /* --- MODIFIED SECTION --- */
 .board-item {
     position: absolute; /* Position relative to the board container */
-    top: 25px; /* Distance from the top of the board */
-    left: 25px; /* Distance from the left of the board */
-    /* transform: translate(-50%, -50%); */ /* Removed centering transform */
-    width: 20%; /* Image will be 20% of the board's width */
-    max-width: 200px; /* Set a max pixel size */
-    transition: box-shadow 0.3s ease-in-out;
-    z-index: 3; /* Ensure it's above the board image */
+    top: 75px; /* Moved further down */
+    left: 75px; /* Moved further right */
+    width: 25%; /* Slightly bigger */
+    max-width: 250px; /* Max pixel size increased */
+    transition: none; /* Remove transition for instant flashing */
+    z-index: 3;
+    padding: 5px; /* Keep padding if you want a border */
+    background-color: rgba(0,0,0,0.1); /* Optional background behind the image */
 }
-/* --- END MODIFIED SECTION --- */
 
 .hover-glow-image {
     width: 100%;
@@ -71,25 +70,28 @@ html, body {
     outline: none;
 }
 
-/* Keyframes for the glowing effect */
+/* Brighter colors and faster flashing animation */
 @keyframes cycle-glow {
-    0%   { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } /* White */
-    20%  { box-shadow: 0 0 15px rgba(0, 0, 255, 0.8); }     /* Blue */
-    40%  { box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); }       /* Black */
-    60%  { box-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }     /* Green */
-    80%  { box-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }     /* Red */
-    100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } /* Back to White */
+    0%   { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* White - brighter */
+    20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 255, 1); }     /* Blue - brighter */
+    40%  { box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1); }       /* Black - brighter */
+    60%  { box-shadow: 0 0 20px 5px rgba(0, 255, 0, 1); }     /* Green - brighter */
+    80%  { box-shadow: 0 0 20px 5px rgba(255, 0, 0, 1); }     /* Red - brighter */
+    100% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* Back to White */
 }
 
 .board-item:hover {
-    animation: cycle-glow 4s infinite;
+    animation: cycle-glow 0.3s steps(1) infinite; /* Much faster, step animation */
+    /* Use steps(1) for instant color changes, no transition */
 }
+/* --- END MODIFIED SECTION --- */
+
 
 #play-button {
     position: absolute;
     bottom: 10px;
     left: 10px;
-    z-index: 4; /* Ensure button is above the glowing item */
+    z-index: 4;
     padding: 8px 15px;
     font-size: 16px;
     cursor: pointer;
@@ -110,8 +112,8 @@ html, body {
         left: 5px;
     }
     .board-item {
-        width: 30%; /* Adjust size on mobile if needed */
-        top: 10px;
-        left: 10px;
+        width: 40%; /* Adjust size on mobile if needed */
+        top: 30px; /* Adjust position on mobile */
+        left: 30px; /* Adjust position on mobile */
     }
 }
