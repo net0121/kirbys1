@@ -70,12 +70,12 @@ html, body {
 
 
 @keyframes cycle-glow {
-    20%   { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* White - brighter */
-    20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 255, 1); }     /* Blue - brighter */
-    20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1); }       /* Black - brighter */
-    20%  { box-shadow: 0 0 20px 5px rgba(0, 255, 0, 1); }     /* Green - brighter */
-    20%  { box-shadow: 0 0 20px 5px rgba(255, 0, 0, 1); }     /* Red - brighter */
-    20% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* Back to White */
+    0%   { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.6); } /* White */
+    20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 255, 0.6); }     /* Blue */
+    60%  { box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.6); }       /* Black */
+    80%  { box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.6); }     /* Green*/
+    100%  { box-shadow: 0 0 20px 5px rgba(255, 0, 0, 0.6); }     /* Red */
+    100% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.6); } /* Back to White */
 }
 
 .board-item:hover {
