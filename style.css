@@ -19,7 +19,6 @@ html, body {
     left: -50%;
     width: 200%;
     height: 200%;
-    /* Make sure this URL points to your star background image */
     background-image: url('stars.png');
     background-repeat: repeat;
     background-size: 50vw;
@@ -49,11 +48,10 @@ html, body {
     display: block;
 }
 
-/* --- MODIFIED SECTION --- */
 .board-item {
     position: absolute; /* Position relative to the board container */
     top: 75px; /* Moved further down */
-    left: 75px; /* Moved further right */
+    left: 75px; 
     width: 25%; /* Slightly bigger */
     max-width: 250px; /* Max pixel size increased */
     transition: none; /* Remove transition for instant flashing */
@@ -70,21 +68,20 @@ html, body {
     outline: none;
 }
 
-/* Brighter colors and faster flashing animation */
+
 @keyframes cycle-glow {
-    0%   { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* White - brighter */
+    20%   { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* White - brighter */
     20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 255, 1); }     /* Blue - brighter */
-    40%  { box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1); }       /* Black - brighter */
-    60%  { box-shadow: 0 0 20px 5px rgba(0, 255, 0, 1); }     /* Green - brighter */
-    80%  { box-shadow: 0 0 20px 5px rgba(255, 0, 0, 1); }     /* Red - brighter */
-    100% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* Back to White */
+    20%  { box-shadow: 0 0 20px 5px rgba(0, 0, 0, 1); }       /* Black - brighter */
+    20%  { box-shadow: 0 0 20px 5px rgba(0, 255, 0, 1); }     /* Green - brighter */
+    20%  { box-shadow: 0 0 20px 5px rgba(255, 0, 0, 1); }     /* Red - brighter */
+    20% { box-shadow: 0 0 20px 5px rgba(255, 255, 255, 1); } /* Back to White */
 }
 
 .board-item:hover {
-    animation: cycle-glow 0.3s steps(1) infinite; /* Much faster, step animation */
-    /* Use steps(1) for instant color changes, no transition */
+    animation: cycle-glow 0.3s steps(1) infinite;
 }
-/* --- END MODIFIED SECTION --- */
+
 
 
 #play-button {
@@ -112,7 +109,7 @@ html, body {
         left: 5px;
     }
     .board-item {
-        width: 40%; /* Adjust size on mobile if needed */
+        width: 40%; /* Adjust size on mobile */
         top: 30px; /* Adjust position on mobile */
         left: 30px; /* Adjust position on mobile */
     }
