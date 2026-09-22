@@ -103,7 +103,7 @@ html, body {
 
 .hover-glow-link {
     display: block;
-    border-radius: 50%;
+    border-radius: 8px;
     overflow: hidden;
     border: 4px solid #ffe14d;
     box-shadow: 0 0 0 4px #7a3b00;
